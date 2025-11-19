@@ -404,9 +404,12 @@ import SoundEffects from '@js/SoundEffects';
         // Process images sequentially to avoid memory issues
         for (let i = 0; i < imageFiles.length; i++) {
           const compressedImage = await compressImage(imageFiles[i]);
+          // Use filename without extension as the gift name
+          const filename = imageFiles[i].name;
+          const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
           giftList.push({
             image: compressedImage,
-            name: `Gift ${giftList.length + 1}`
+            name: nameWithoutExt
           });
         }
         
