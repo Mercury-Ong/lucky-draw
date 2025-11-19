@@ -77,11 +77,11 @@ export default class Slot {
         { filter: 'blur(1px)', offset: 0.5 },
         // Here we transform the reel to move up and stop at the top of last item
         // "(Number of item - 1) * height of reel item" of wheel is the amount of pixel to move up
-        // 5rem * 16 = 80px, which equals to reel item height
-        { transform: `translateY(-${(this.maxReelItems - 1) * (5 * 16)}px)`, filter: 'blur(0)' }
+        // 10rem * 16 = 160px, which equals to double the reel item height for faster scrolling
+        { transform: `translateY(-${(this.maxReelItems - 1) * (10 * 16)}px)`, filter: 'blur(0)' }
       ],
       {
-        duration: this.maxReelItems * 50, // 50ms for 1 item
+        duration: this.maxReelItems * 100, // 100ms for 1 item
         easing: 'linear',
         iterations: 1
       }
@@ -173,11 +173,13 @@ export default class Slot {
     // Shuffle names and create reel items
     let randomNames = Slot.shuffleNames<string>(this.nameList);
 
-    while (randomNames.length && randomNames.length < this.maxReelItems) {
-      randomNames = [...randomNames, ...randomNames];
+    // Loop the name list multiple times to fill the reel
+    const targetLength = this.maxReelItems * 2; // Double the items needed for faster scrolling
+    while (randomNames.length < targetLength) {
+      randomNames = [...randomNames, ...Slot.shuffleNames<string>(this.nameList)];
     }
 
-    randomNames = randomNames.slice(0, this.maxReelItems - Number(this.havePreviousWinner));
+    randomNames = randomNames.slice(0, targetLength - Number(this.havePreviousWinner));
 
     const fragment = document.createDocumentFragment();
 
