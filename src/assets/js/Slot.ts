@@ -77,8 +77,8 @@ export default class Slot {
         { filter: 'blur(1px)', offset: 0.5 },
         // Here we transform the reel to move up and stop at the top of last item
         // "(Number of item - 1) * height of reel item" of wheel is the amount of pixel to move up
-        // 7.5rem * 16 = 120px, which equals to reel item height
-        { transform: `translateY(-${(this.maxReelItems - 1) * (7.5 * 16)}px)`, filter: 'blur(0)' }
+        // 5rem * 16 = 80px, which equals to reel item height
+        { transform: `translateY(-${(this.maxReelItems - 1) * (5 * 16)}px)`, filter: 'blur(0)' }
       ],
       {
         duration: this.maxReelItems * 100, // 100ms for 1 item

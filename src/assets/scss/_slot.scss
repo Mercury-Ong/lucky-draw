@@ -29,6 +29,96 @@
   }
 }
 
+.image-box {
+  height: 30vh;
+  width: 100%;
+  max-width: 50rem;
+  margin: 2rem auto 0 auto;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  position: relative;
+  z-index: $z-index-title;
+  overflow: hidden;
+  cursor: pointer;
+  
+  @media #{$mobile} {
+    height: 20vh;
+    margin: 1rem auto 0 auto;
+  }
+}
+
+.gift-name {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: $color-text-light;
+  margin: 1rem 0 2rem 0;
+  
+  @media #{$mobile} {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 1rem 0;
+  }
+}
+
+.uploaded-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.image-nav-left,
+.image-nav-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: $color-white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  z-index: 10;
+  opacity: 0.5;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+  }
+  
+  &::before {
+    content: '';
+    border: solid $color-white;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 8px;
+  }
+}
+
+.image-nav-left {
+  left: 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  
+  &::before {
+    transform: rotate(135deg);
+    margin-left: 5px;
+  }
+}
+
+.image-nav-right {
+  right: 1rem;
+  border-radius: 0.5rem 0 0 0.5rem;
+  
+  &::before {
+    transform: rotate(-45deg);
+    margin-right: 5px;
+  }
+}
+
 .control-group {
   position: absolute;
   top: 1rem;
@@ -65,9 +155,82 @@
     margin: 0 auto;
     border-radius: $slot-border-radius;
     @include shadow('large');
-    background: $color-slot-background url(@images/light-blubs.svg);
+    background: $color-slot-background;
     position: relative;
     z-index: $z-index-slot; // make sure slot is on top of sunburst
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: $slot-border-radius;
+      box-shadow: 
+        inset 0 0 20px rgba($color-green, 0.3),
+        0 0 10px 2px rgba($color-green, 0.5),
+        0 0 20px 4px rgba($color-green, 0.3),
+        0 0 30px 6px rgba($color-green, 0.2);
+      pointer-events: none;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: $slot-border-radius;
+      background: 
+        // Top row
+        radial-gradient(circle at 5% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 10% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 15% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 20% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 25% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 30% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 35% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 40% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 45% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 50% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 55% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 60% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 65% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 70% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 75% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 80% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 85% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 90% 8px, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 95% 8px, $color-white 5px, transparent 5px),
+        // Bottom row
+        radial-gradient(circle at 5% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 10% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 15% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 20% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 25% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 30% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 35% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 40% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 45% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 50% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 55% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 60% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 65% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 70% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 75% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 80% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 85% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 90% calc(100% - 8px), $color-white 5px, transparent 5px),
+        radial-gradient(circle at 95% calc(100% - 8px), $color-white 5px, transparent 5px),
+        // Left side
+        radial-gradient(circle at 8px 25%, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 8px 50%, $color-white 5px, transparent 5px),
+        radial-gradient(circle at 8px 75%, $color-white 5px, transparent 5px),
+        // Right side
+        radial-gradient(circle at calc(100% - 8px) 25%, $color-white 5px, transparent 5px),
+        radial-gradient(circle at calc(100% - 8px) 50%, $color-white 5px, transparent 5px),
+        radial-gradient(circle at calc(100% - 8px) 75%, $color-white 5px, transparent 5px);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: -1;
+    }
   }
 
   &__inner {
@@ -195,7 +358,9 @@
   }
 
   #settings-save,
-  #settings-close {
+  #settings-close,
+  #gift-settings-save,
+  #gift-settings-close {
     margin: 1.875rem 0 0 0;
     display: block;
     width: 100%;
@@ -209,24 +374,19 @@
 
 // Winning effects
 .sunburst {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
-  margin: -50vh 0 0 -50vw;
-  width: 100vw;
-  height: 100vh;
+  transform: translate(-50%, -50%);
+  width: $slot-width;
+  height: $slot-width;
   display: none;
   z-index: $z-index-sunburst;
   pointer-events: none;
-  overflow: hidden;
 
   > img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -50vmin 0 0 -50vmin;
-    width: 100vmin;
-    height: auto;
+    width: 100%;
+    height: 100%;
     animation: rotate 10s infinite linear;
   }
 }

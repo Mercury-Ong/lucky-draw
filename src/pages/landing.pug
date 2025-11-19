@@ -1,10 +1,14 @@
 include ../mixins/icons
 
 .main
+  h1.event-title Deloitte BN Annual Dinner 2025
+
   .control-group
     button#fullscreen-button.icon-button.icon-button--small
       +svg-icon.red.big(svg-icon-name='fullscreen')
-    button#settings-button.icon-button.icon-button--small
+    button#gift-settings-button.icon-button.icon-button--small(title='Gift Settings')
+      +svg-icon.red.big(svg-icon-name='gift')
+    button#settings-button.icon-button.icon-button--small(title='Name Settings')
       +svg-icon.red.big(svg-icon-name='settings')
 
   canvas#confetti-canvas.confetti
@@ -14,21 +18,28 @@ include ../mixins/icons
       //- Pug loader currently does not handle webpack alias so we will use relative path here
       include ../assets/images/title.svg
 
+    .image-box#image-box
+      img#uploaded-image.uploaded-image(style="display: none;")
+      .image-nav-left#image-nav-left
+      .image-nav-right#image-nav-right
+
+    h2#gift-name.gift-name(style="display: none;")
+
     .slot
       .slot__outer
         .slot__inner
           .slot__shadow
           #reel.reel
 
-      #sunburst.sunburst
-        img(src="~@images/sunburst.svg" alt="sunburst")
+    #sunburst.sunburst
+      img(src="~@images/sunburst.svg" alt="sunburst")
 
     button#draw-button.solid-button Draw
 
   #settings.settings
     #settings-panel.settings__panel
       div.settings__panel__group
-        h1.settings__title Settings
+        h1.settings__title Name List Settings
         div.input-group
           label.input-label(for="name-list") Name List
           textarea.input-field.input-field--textarea(rows="8" placeholder="Separate each name by line break" id="name-list")
@@ -44,7 +55,27 @@ include ../mixins/icons
           label.input--switch
             input(type="checkbox" checked="true" id="enable-sound")
             span.slider
+
+        div.input-group
+          label.input-label(for="volume-control") Volume
+          input.input-field.input-field--range(type="range" min="0" max="100" value="50" id="volume-control")
       div.settings__panel__group
         button#settings-save.solid-button.solid-button Save
         button#settings-close.solid-button.solid-button--danger Discard and close
+
+  #gift-settings.settings
+    #gift-settings-panel.settings__panel
+      div.settings__panel__group
+        h1.settings__title Gift List Settings
+        div.input-group
+          label.input-label(for="image-upload") Upload Gift Images
+          input.input-field--file(type="file" accept="image/*" multiple id="image-upload")
+          p.input-hint Images will be removed in the order they were uploaded (first in, first out)
+        
+        div.input-group
+          label.input-label Gift List
+          #gift-list.gift-list
+      div.settings__panel__group
+        button#gift-settings-save.solid-button.solid-button Save
+        button#gift-settings-close.solid-button.solid-button--danger Discard and close
 

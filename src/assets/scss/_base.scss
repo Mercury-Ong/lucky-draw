@@ -22,21 +22,14 @@ body {
   height: 100%;
   font-size: 16px;
   line-height: 1.5;
-  font-family: 'Nunito Sans', 微軟正黑體, 'Microsoft JhengHei',
+  font-family: 'Aptos', 'Nunito Sans', 微軟正黑體, 'Microsoft JhengHei',
     'Microsoft JhengHei UI', 'Microsoft YaHei', 'Microsoft YaHei UI',
     'PingFang TC', 'Lantinghei TC', 'Heiti TC', 'Apple LiGothic', 'PMingLiU',
     Arial, sans-serif;
 }
 
 #app {
-  background: linear-gradient(
-    240deg,
-    $color-red-step1 0.13%,
-    $color-red-step2 26.19%,
-    $color-red-step3 52.6%,
-    $color-red-step4 79.08%,
-    $color-red-step5 100%
-  );
+  background: $color-black;
   color: $color-text-light;
   padding: 0 3.125rem;
   min-height: 100%;
@@ -90,6 +83,32 @@ body {
   max-width: $screen-xl;
   flex: 1 1 0;
   min-height: min-content;
+}
+
+.event-title {
+  font-size: 4rem;
+  text-align: center;
+  color: $color-text-light;
+  text-shadow: 
+    -1px -1px 0 $color-green, 1px -1px 0 $color-green, -1px 1px 0 $color-green, 1px 1px 0 $color-green,
+    -2px -2px 0 $color-green, 2px -2px 0 $color-green, -2px 2px 0 $color-green, 2px 2px 0 $color-green,
+    -3px -3px 0 $color-green, 3px -3px 0 $color-green, -3px 3px 0 $color-green, 3px 3px 0 $color-green,
+    -4px -4px 0 $color-green, 4px -4px 0 $color-green, -4px 4px 0 $color-green, 4px 4px 0 $color-green,
+    -5px -5px 0 $color-green, 5px -5px 0 $color-green, -5px 5px 0 $color-green, 5px 5px 0 $color-green,
+    -6px -6px 0 $color-green, 6px -6px 0 $color-green, -6px 6px 0 $color-green, 6px 6px 0 $color-green,
+    -7px -7px 0 $color-green, 7px -7px 0 $color-green, -7px 7px 0 $color-green, 7px 7px 0 $color-green,
+    -1px 0 0 $color-green, 1px 0 0 $color-green, 0 -1px 0 $color-green, 0 1px 0 $color-green,
+    -2px 0 0 $color-green, 2px 0 0 $color-green, 0 -2px 0 $color-green, 0 2px 0 $color-green,
+    -3px 0 0 $color-green, 3px 0 0 $color-green, 0 -3px 0 $color-green, 0 3px 0 $color-green,
+    -4px 0 0 $color-green, 4px 0 0 $color-green, 0 -4px 0 $color-green, 0 4px 0 $color-green,
+    -5px 0 0 $color-green, 5px 0 0 $color-green, 0 -5px 0 $color-green, 0 5px 0 $color-green,
+    -6px 0 0 $color-green, 6px 0 0 $color-green, 0 -6px 0 $color-green, 0 6px 0 $color-green,
+    -7px 0 0 $color-green, 7px 0 0 $color-green, 0 -7px 0 $color-green, 0 7px 0 $color-green;
+  
+  @media #{$mobile} {
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+  }
 }
 
 .footer {

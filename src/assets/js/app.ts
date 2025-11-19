@@ -11,11 +11,24 @@ import SoundEffects from '@js/SoundEffects';
   const settingsContent = document.getElementById('settings-panel') as HTMLDivElement | null;
   const settingsSaveButton = document.getElementById('settings-save') as HTMLButtonElement | null;
   const settingsCloseButton = document.getElementById('settings-close') as HTMLButtonElement | null;
+  const giftSettingsButton = document.getElementById('gift-settings-button') as HTMLButtonElement | null;
+  const giftSettingsWrapper = document.getElementById('gift-settings') as HTMLDivElement | null;
+  const giftSettingsContent = document.getElementById('gift-settings-panel') as HTMLDivElement | null;
+  const giftSettingsSaveButton = document.getElementById('gift-settings-save') as HTMLButtonElement | null;
+  const giftSettingsCloseButton = document.getElementById('gift-settings-close') as HTMLButtonElement | null;
   const sunburstSvg = document.getElementById('sunburst') as HTMLImageElement | null;
   const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement | null;
   const nameListTextArea = document.getElementById('name-list') as HTMLTextAreaElement | null;
   const removeNameFromListCheckbox = document.getElementById('remove-from-list') as HTMLInputElement | null;
   const enableSoundCheckbox = document.getElementById('enable-sound') as HTMLInputElement | null;
+  const volumeControl = document.getElementById('volume-control') as HTMLInputElement | null;
+  const imageUpload = document.getElementById('image-upload') as HTMLInputElement | null;
+  const uploadedImage = document.getElementById('uploaded-image') as HTMLImageElement | null;
+  const giftListContainer = document.getElementById('gift-list') as HTMLDivElement | null;
+  const imageBox = document.getElementById('image-box') as HTMLDivElement | null;
+  const imageNavLeft = document.getElementById('image-nav-left') as HTMLDivElement | null;
+  const imageNavRight = document.getElementById('image-nav-right') as HTMLDivElement | null;
+  const giftNameDisplay = document.getElementById('gift-name') as HTMLHeadingElement | null;
 
   // Graceful exit if necessary elements are not found
   if (!(
@@ -26,11 +39,24 @@ import SoundEffects from '@js/SoundEffects';
     && settingsContent
     && settingsSaveButton
     && settingsCloseButton
+    && giftSettingsButton
+    && giftSettingsWrapper
+    && giftSettingsContent
+    && giftSettingsSaveButton
+    && giftSettingsCloseButton
     && sunburstSvg
     && confettiCanvas
     && nameListTextArea
     && removeNameFromListCheckbox
     && enableSoundCheckbox
+    && volumeControl
+    && imageUpload
+    && uploadedImage
+    && giftListContainer
+    && imageBox
+    && imageNavLeft
+    && imageNavRight
+    && giftNameDisplay
   )) {
     console.error('One or more Element ID is invalid. This is possibly a bug.');
     return;
@@ -45,6 +71,131 @@ import SoundEffects from '@js/SoundEffects';
   const MAX_REEL_ITEMS = 40;
   const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
   let confettiAnimationId;
+  
+  // Gift list management
+  interface GiftItem {
+    image: string;
+    name: string;
+  }
+  let giftList: GiftItem[] = [];
+  let currentImageIndex = 0;
+  
+  /** Load gift list from localStorage */
+  const loadGiftList = () => {
+    const saved = localStorage.getItem('giftList');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Handle legacy format (array of strings)
+        if (parsed.length > 0 && typeof parsed[0] === 'string') {
+          giftList = parsed.map((img: string, idx: number) => ({ image: img, name: `Gift ${idx + 1}` }));
+        } else {
+          giftList = parsed;
+        }
+        updateGiftListUI();
+        updateCurrentGiftImage();
+      } catch (e) {
+        console.error('Failed to load gift list:', e);
+        giftList = [];
+      }
+    }
+  };
+  
+  /** Save gift list to localStorage */
+  const saveGiftList = () => {
+    try {
+      localStorage.setItem('giftList', JSON.stringify(giftList));
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+        console.error('Storage quota exceeded. Gift list is too large.');
+        alert('Storage limit exceeded. Please upload fewer or smaller images. The last upload was not saved.');
+        // Remove the last added items that couldn't be saved
+        giftList = giftList.slice(0, -1);
+      } else {
+        console.error('Failed to save gift list:', e);
+      }
+    }
+  };
+  
+  /** Update the current gift image displayed */
+  const updateCurrentGiftImage = () => {
+    if (giftList.length > 0) {
+      // Ensure index is within bounds
+      if (currentImageIndex >= giftList.length) {
+        currentImageIndex = giftList.length - 1;
+      }
+      if (currentImageIndex < 0) {
+        currentImageIndex = 0;
+      }
+      
+      uploadedImage.src = giftList[currentImageIndex].image;
+      uploadedImage.style.display = 'block';
+      giftNameDisplay.textContent = giftList[currentImageIndex].name;
+      giftNameDisplay.style.display = 'block';
+      
+      // Show/hide navigation arrows
+      imageNavLeft.style.display = giftList.length > 1 ? 'flex' : 'none';
+      imageNavRight.style.display = giftList.length > 1 ? 'flex' : 'none';
+    } else {
+      uploadedImage.src = '';
+      uploadedImage.style.display = 'none';
+      giftNameDisplay.style.display = 'none';
+      imageNavLeft.style.display = 'none';
+      imageNavRight.style.display = 'none';
+    }
+  };
+  
+  /** Update the gift list UI in settings */
+  const updateGiftListUI = () => {
+    giftListContainer.innerHTML = '';
+    
+    if (giftList.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'gift-list-empty';
+      emptyMsg.textContent = 'No gifts uploaded yet';
+      giftListContainer.appendChild(emptyMsg);
+      return;
+    }
+    
+    giftList.forEach((giftItem, index) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'gift-list-item';
+      
+      const img = document.createElement('img');
+      img.src = giftItem.image;
+      img.className = 'gift-list-item-image';
+      
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'gift-list-item-info';
+      
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.className = 'gift-list-item-name';
+      nameInput.value = giftItem.name;
+      nameInput.placeholder = `Gift ${index + 1}`;
+      nameInput.onchange = () => {
+        giftList[index].name = nameInput.value || `Gift ${index + 1}`;
+        saveGiftList();
+      };
+      
+      infoDiv.appendChild(nameInput);
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'gift-list-item-remove';
+      removeBtn.textContent = '×';
+      removeBtn.onclick = () => {
+        giftList.splice(index, 1);
+        saveGiftList();
+        updateGiftListUI();
+        updateCurrentGiftImage();
+      };
+      
+      itemDiv.appendChild(img);
+      itemDiv.appendChild(infoDiv);
+      itemDiv.appendChild(removeBtn);
+      giftListContainer.appendChild(itemDiv);
+    });
+  };
 
   /** Confeetti animation instance */
   const customConfetti = confetti.create(confettiCanvas, {
@@ -82,6 +233,7 @@ import SoundEffects from '@js/SoundEffects';
     stopWinningAnimation();
     drawButton.disabled = true;
     settingsButton.disabled = true;
+    giftSettingsButton.disabled = true;
     soundEffects.spin((MAX_REEL_ITEMS - 1) / 10);
   };
 
@@ -92,6 +244,7 @@ import SoundEffects from '@js/SoundEffects';
     await soundEffects.win();
     drawButton.disabled = false;
     settingsButton.disabled = false;
+    giftSettingsButton.disabled = false;
   };
 
   /** Slot instance */
@@ -108,6 +261,7 @@ import SoundEffects from '@js/SoundEffects';
     nameListTextArea.value = slot.names.length ? slot.names.join('\n') : '';
     removeNameFromListCheckbox.checked = slot.shouldRemoveWinnerFromNameList;
     enableSoundCheckbox.checked = !soundEffects.mute;
+    volumeControl.value = (soundEffects.volume * 100).toString();
     settingsWrapper.style.display = 'block';
   };
 
@@ -156,9 +310,152 @@ import SoundEffects from '@js/SoundEffects';
       : [];
     slot.shouldRemoveWinnerFromNameList = removeNameFromListCheckbox.checked;
     soundEffects.mute = !enableSoundCheckbox.checked;
+    soundEffects.volume = parseInt(volumeControl.value, 10) / 100;
     onSettingsClose();
   });
 
   // Click handler for "Discard and close" button for setting page
   settingsCloseButton.addEventListener('click', onSettingsClose);
+
+  /** To open the gift settings page */
+  const onGiftSettingsOpen = () => {
+    updateGiftListUI();
+    giftSettingsWrapper.style.display = 'block';
+  };
+
+  /** To close the gift settings page */
+  const onGiftSettingsClose = () => {
+    giftSettingsContent.scrollTop = 0;
+    giftSettingsWrapper.style.display = 'none';
+  };
+
+  // Click handler for "Gift Settings" button
+  giftSettingsButton.addEventListener('click', onGiftSettingsOpen);
+
+  // Click handler for "Save" button for gift settings page
+  giftSettingsSaveButton.addEventListener('click', () => {
+    onGiftSettingsClose();
+  });
+
+  // Click handler for "Discard and close" button for gift settings page
+  giftSettingsCloseButton.addEventListener('click', onGiftSettingsClose);
+
+  /** Compress image to reduce storage size */
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'));
+            return;
+          }
+          
+          // Set max dimensions to reduce file size
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = height * (MAX_WIDTH / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = width * (MAX_HEIGHT / height);
+              height = MAX_HEIGHT;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.7 quality
+          const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(compressedData);
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Handle image upload (multiple files)
+  imageUpload.addEventListener('change', async (event) => {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+      
+      if (imageFiles.length === 0) {
+        return;
+      }
+      
+      try {
+        // Process images sequentially to avoid memory issues
+        for (let i = 0; i < imageFiles.length; i++) {
+          const compressedImage = await compressImage(imageFiles[i]);
+          giftList.push({
+            image: compressedImage,
+            name: `Gift ${giftList.length + 1}`
+          });
+        }
+        
+        saveGiftList();
+        updateGiftListUI();
+        updateCurrentGiftImage();
+        imageUpload.value = ''; // Reset input
+      } catch (error) {
+        console.error('Failed to process images:', error);
+        alert('Failed to upload some images. Please try uploading smaller images or fewer at a time.');
+      }
+    }
+  });
+
+  // Load gift list on page load
+  loadGiftList();
+  
+  // Image navigation handlers
+  imageNavLeft.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (giftList.length > 0) {
+      currentImageIndex = (currentImageIndex - 1 + giftList.length) % giftList.length;
+      updateCurrentGiftImage();
+    }
+  });
+  
+  imageNavRight.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (giftList.length > 0) {
+      currentImageIndex = (currentImageIndex + 1) % giftList.length;
+      updateCurrentGiftImage();
+    }
+  });
+  
+  // Click on left/right half of image box to navigate
+  imageBox.addEventListener('click', (e) => {
+    if (giftList.length <= 1) return;
+    
+    const rect = imageBox.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const halfWidth = rect.width / 2;
+    
+    if (clickX < halfWidth) {
+      // Clicked left side - go to previous
+      currentImageIndex = (currentImageIndex - 1 + giftList.length) % giftList.length;
+    } else {
+      // Clicked right side - go to next
+      currentImageIndex = (currentImageIndex + 1) % giftList.length;
+    }
+    updateCurrentGiftImage();
+  });
 })();

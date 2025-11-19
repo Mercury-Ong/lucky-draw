@@ -10,7 +10,7 @@ $color-red-step3: #ff3634;
 $color-red-step4: #ff223c;
 $color-red-step5: #ff0c45;
 
-$color-yellow: #ffbf1f;
+$color-green: #86BC25;
 $color-blood-orange: #e54c23;
 $color-shadow: rgba($color-black, 0.2);
 
@@ -21,17 +21,17 @@ $color-link: rgba($color-white, 0.8);
 $color-link-hover: rgba($color-white, 0.9);
 
 // title
-$color-title-border: $color-yellow;
+$color-title-border: $color-green;
 
 // button
 $color-button-text: $color-white;
-$color-button-default-background: $color-yellow;
-$color-button-default-hover-background: lighten($color-yellow, 5%);
+$color-button-default-background: $color-green;
+$color-button-default-hover-background: lighten($color-green, 5%);
 $color-button-danger-background: $color-blood-orange;
 $color-button-danger-hover-background: lighten($color-blood-orange, 5%);
 
 // slot
-$color-slot-background: $color-yellow;
+$color-slot-background: $color-green;
 $color-slot-shadow: $color-shadow;
 $color-slot-inner-background: $color-white;
 $color-slot-text: $color-black;

@@ -20,24 +20,24 @@ $z-index-draw-button: 5;
 $z-index-settings: 10;
 
 // title
-$title-width: 31rem;
-$title-margin-top: 1.75rem;
-$title-margin-bottom: 4.875rem;
+$title-width: 20rem;
+$title-margin-top: 0rem;
+$title-margin-bottom: 0rem;
 
 // reel
-$reel-item-height: 7.5rem;
+$reel-item-height: 5rem;
 
 // slot
 $slot-width: 62.5rem;
-$slot-height: 14.375rem;
+$slot-height: 10rem;
 $slot-border-radius: 1.25rem;
-$slot-border-width: 1.625rem;
+$slot-border-width: 1.25rem;
 $slot-inner-padding: (
     $slot-height - ($slot-border-width * 2) - $reel-item-height
   ) / 2;
 
 // draw-button
-$draw-button-margin-top: 5.5rem;
+$draw-button-margin-top: 4.5rem;
 $draw-button-width: 22.5rem;
 
 // settings

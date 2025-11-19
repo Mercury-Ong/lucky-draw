@@ -24,12 +24,16 @@ export default class SoundEffects {
   /** Indicator for whether this sound effect instance is muted */
   private isMuted: boolean;
 
-  constructor(isMuted = false) {
+  /** Master volume level (0-1) */
+  private volumeLevel: number;
+
+  constructor(isMuted = false, volume = 0.5) {
     if (window.AudioContext || window.webkitAudioContext) {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     this.isMuted = isMuted;
+    this.volumeLevel = Math.max(0, Math.min(1, volume)); // Clamp between 0 and 1
   }
 
   /** Setter for isMuted */
@@ -40,6 +44,16 @@ export default class SoundEffects {
   /** Getter for isMuted */
   get mute(): boolean {
     return this.isMuted;
+  }
+
+  /** Setter for volume */
+  set volume(volume: number) {
+    this.volumeLevel = Math.max(0, Math.min(1, volume)); // Clamp between 0 and 1
+  }
+
+  /** Getter for volume */
+  get volume(): number {
+    return this.volumeLevel;
   }
 
   /**
@@ -64,7 +78,7 @@ export default class SoundEffects {
     gainNode.connect(audioContext.destination);
 
     oscillator.type = type;
-    gainNode.gain.value = volume; // set default volume to 10%
+    gainNode.gain.value = volume * this.volumeLevel; // Apply master volume
 
     const { currentTime: audioCurrentTime } = audioContext;
 
@@ -75,7 +89,8 @@ export default class SoundEffects {
 
     // ease out to 1% during last 100ms
     if (shouldEaseOut) {
-      gainNode.gain.exponentialRampToValueAtTime(volume, audioCurrentTime + totalDuration - 0.1);
+      const adjustedVolume = volume * this.volumeLevel;
+      gainNode.gain.exponentialRampToValueAtTime(adjustedVolume, audioCurrentTime + totalDuration - 0.1);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioCurrentTime + totalDuration);
     }
 
