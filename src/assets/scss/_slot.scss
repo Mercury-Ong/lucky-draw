@@ -3,6 +3,11 @@
   text-align: center;
   position: relative;
   z-index: $z-index-lucky-draw; // make sure contents are on top of confetting
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .title {
@@ -30,19 +35,20 @@
 }
 
 .image-box {
-  height: 30vh;
+  height: clamp(120px, 38vh, 600px);
   width: 100%;
   max-width: 50rem;
-  margin: 2rem auto 0 auto;
+  margin: 1rem auto 0 auto;
   border-radius: 0.5rem;
   position: relative;
   z-index: $z-index-title;
   overflow: hidden;
   cursor: pointer;
+  flex-shrink: 0;
   
   @media #{$mobile} {
-    height: 20vh;
-    margin: 1rem auto 0 auto;
+    height: clamp(100px, 15vh, 200px);
+    margin: 0.5rem auto 0 auto;
   }
 }
 
@@ -51,11 +57,12 @@
   font-weight: 700;
   text-align: center;
   color: $color-text-light;
-  margin: 1rem 0 2rem 0;
+  margin: 0.5rem 0 1rem 0;
+  flex-shrink: 0;
   
   @media #{$mobile} {
     font-size: 1.5rem;
-    margin: 0.5rem 0 1rem 0;
+    margin: 0.25rem 0 0.5rem 0;
   }
 }
 

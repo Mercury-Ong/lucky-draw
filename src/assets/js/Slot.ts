@@ -19,6 +19,12 @@ export default class Slot {
   /** List of names to draw from */
   private nameList: string[];
 
+  /** List of priority names that must be drawn within first 40 spins */
+  private priorityNameList: string[];
+
+  /** Counter for number of spins */
+  private spinCount: number;
+
   /** Whether there is a previous winner element displayed in reel */
   private havePreviousWinner: boolean;
 
@@ -62,6 +68,8 @@ export default class Slot {
     }: SlotConfigurations
   ) {
     this.nameList = [];
+    this.priorityNameList = [];
+    this.spinCount = 0;
     this.havePreviousWinner = false;
     this.reelContainer = document.querySelector(reelContainerSelector);
     this.maxReelItems = maxReelItems;
@@ -114,6 +122,19 @@ export default class Slot {
   /** Getter for name list */
   get names(): string[] {
     return this.nameList;
+  }
+
+  /**
+   * Setter for priority name list
+   * @param names  List of priority names that must be drawn within first 40 spins
+   */
+  set priorityNames(names: string[]) {
+    this.priorityNameList = names;
+  }
+
+  /** Getter for priority name list */
+  get priorityNames(): string[] {
+    return this.priorityNameList;
   }
 
   /**
@@ -170,13 +191,25 @@ export default class Slot {
       return false;
     }
 
+    // Increment spin count
+    this.spinCount += 1;
+
     // Shuffle names and create reel items
-    let randomNames = Slot.shuffleNames<string>(this.nameList);
+    let poolToDrawFrom: string[];
+
+    // If within first 40 spins and priority list has names, only draw from priority list
+    if (this.spinCount <= 40 && this.priorityNameList.length > 0) {
+      poolToDrawFrom = this.priorityNameList;
+    } else {
+      poolToDrawFrom = this.nameList;
+    }
+
+    let randomNames = Slot.shuffleNames<string>(poolToDrawFrom);
 
     // Loop the name list multiple times to fill the reel
     const targetLength = this.maxReelItems * 2; // Double the items needed for faster scrolling
     while (randomNames.length < targetLength) {
-      randomNames = [...randomNames, ...Slot.shuffleNames<string>(this.nameList)];
+      randomNames = [...randomNames, ...Slot.shuffleNames<string>(poolToDrawFrom)];
     }
 
     randomNames = randomNames.slice(0, targetLength - Number(this.havePreviousWinner));
@@ -194,11 +227,21 @@ export default class Slot {
     console.info('Displayed items: ', randomNames);
     console.info('Winner: ', randomNames[randomNames.length - 1]);
 
-    // Remove winner form name list if necessary
+    // Remove winner from appropriate list if necessary
     if (shouldRemoveWinner) {
-      this.nameList.splice(this.nameList.findIndex(
-        (name) => name === randomNames[randomNames.length - 1]
-      ), 1);
+      const winner = randomNames[randomNames.length - 1];
+
+      // Remove from priority list if it exists there
+      const priorityIndex = this.priorityNameList.findIndex((name) => name === winner);
+      if (priorityIndex !== -1) {
+        this.priorityNameList.splice(priorityIndex, 1);
+      }
+
+      // Remove from main name list
+      const nameIndex = this.nameList.findIndex((name) => name === winner);
+      if (nameIndex !== -1) {
+        this.nameList.splice(nameIndex, 1);
+      }
     }
 
     console.info('Remaining: ', this.nameList);

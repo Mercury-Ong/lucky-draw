@@ -19,6 +19,7 @@ import SoundEffects from '@js/SoundEffects';
   const sunburstSvg = document.getElementById('sunburst') as HTMLImageElement | null;
   const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement | null;
   const nameListTextArea = document.getElementById('name-list') as HTMLTextAreaElement | null;
+  const priorityNameListTextArea = document.getElementById('priority-name-list') as HTMLTextAreaElement | null;
   const removeNameFromListCheckbox = document.getElementById('remove-from-list') as HTMLInputElement | null;
   const enableSoundCheckbox = document.getElementById('enable-sound') as HTMLInputElement | null;
   const volumeControl = document.getElementById('volume-control') as HTMLInputElement | null;
@@ -47,6 +48,7 @@ import SoundEffects from '@js/SoundEffects';
     && sunburstSvg
     && confettiCanvas
     && nameListTextArea
+    && priorityNameListTextArea
     && removeNameFromListCheckbox
     && enableSoundCheckbox
     && volumeControl
@@ -71,7 +73,7 @@ import SoundEffects from '@js/SoundEffects';
   const MAX_REEL_ITEMS = 40;
   const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
   let confettiAnimationId;
-  
+
   // Gift list management
   interface GiftItem {
     image: string;
@@ -79,7 +81,7 @@ import SoundEffects from '@js/SoundEffects';
   }
   let giftList: GiftItem[] = [];
   let currentImageIndex = 0;
-  
+
   /** Load gift list from localStorage */
   const loadGiftList = () => {
     const saved = localStorage.getItem('giftList');
@@ -100,7 +102,7 @@ import SoundEffects from '@js/SoundEffects';
       }
     }
   };
-  
+
   /** Save gift list to localStorage */
   const saveGiftList = () => {
     try {
@@ -116,7 +118,7 @@ import SoundEffects from '@js/SoundEffects';
       }
     }
   };
-  
+
   /** Update the current gift image displayed */
   const updateCurrentGiftImage = () => {
     if (giftList.length > 0) {
@@ -127,12 +129,12 @@ import SoundEffects from '@js/SoundEffects';
       if (currentImageIndex < 0) {
         currentImageIndex = 0;
       }
-      
+
       uploadedImage.src = giftList[currentImageIndex].image;
       uploadedImage.style.display = 'block';
       giftNameDisplay.textContent = giftList[currentImageIndex].name;
       giftNameDisplay.style.display = 'block';
-      
+
       // Show/hide navigation arrows
       imageNavLeft.style.display = giftList.length > 1 ? 'flex' : 'none';
       imageNavRight.style.display = giftList.length > 1 ? 'flex' : 'none';
@@ -144,11 +146,11 @@ import SoundEffects from '@js/SoundEffects';
       imageNavRight.style.display = 'none';
     }
   };
-  
+
   /** Update the gift list UI in settings */
   const updateGiftListUI = () => {
     giftListContainer.innerHTML = '';
-    
+
     if (giftList.length === 0) {
       const emptyMsg = document.createElement('p');
       emptyMsg.className = 'gift-list-empty';
@@ -156,18 +158,18 @@ import SoundEffects from '@js/SoundEffects';
       giftListContainer.appendChild(emptyMsg);
       return;
     }
-    
+
     giftList.forEach((giftItem, index) => {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'gift-list-item';
-      
+
       const img = document.createElement('img');
       img.src = giftItem.image;
       img.className = 'gift-list-item-image';
-      
+
       const infoDiv = document.createElement('div');
       infoDiv.className = 'gift-list-item-info';
-      
+
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.className = 'gift-list-item-name';
@@ -177,9 +179,9 @@ import SoundEffects from '@js/SoundEffects';
         giftList[index].name = nameInput.value || `Gift ${index + 1}`;
         saveGiftList();
       };
-      
+
       infoDiv.appendChild(nameInput);
-      
+
       const removeBtn = document.createElement('button');
       removeBtn.className = 'gift-list-item-remove';
       removeBtn.textContent = '×';
@@ -189,7 +191,7 @@ import SoundEffects from '@js/SoundEffects';
         updateGiftListUI();
         updateCurrentGiftImage();
       };
-      
+
       itemDiv.appendChild(img);
       itemDiv.appendChild(infoDiv);
       itemDiv.appendChild(removeBtn);
@@ -259,6 +261,7 @@ import SoundEffects from '@js/SoundEffects';
   /** To open the setting page */
   const onSettingsOpen = () => {
     nameListTextArea.value = slot.names.length ? slot.names.join('\n') : '';
+    priorityNameListTextArea.value = slot.priorityNames.length ? slot.priorityNames.join('\n') : '';
     removeNameFromListCheckbox.checked = slot.shouldRemoveWinnerFromNameList;
     enableSoundCheckbox.checked = !soundEffects.mute;
     volumeControl.value = (soundEffects.volume * 100).toString();
@@ -308,6 +311,9 @@ import SoundEffects from '@js/SoundEffects';
     slot.names = nameListTextArea.value
       ? nameListTextArea.value.split(/\n/).filter((name) => Boolean(name.trim()))
       : [];
+    slot.priorityNames = priorityNameListTextArea.value
+      ? priorityNameListTextArea.value.split(/\n/).filter((name) => Boolean(name.trim()))
+      : [];
     slot.shouldRemoveWinnerFromNameList = removeNameFromListCheckbox.checked;
     soundEffects.mute = !enableSoundCheckbox.checked;
     soundEffects.volume = parseInt(volumeControl.value, 10) / 100;
@@ -341,78 +347,75 @@ import SoundEffects from '@js/SoundEffects';
   giftSettingsCloseButton.addEventListener('click', onGiftSettingsClose);
 
   /** Compress image to reduce storage size */
-  const compressImage = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          if (!ctx) {
-            reject(new Error('Failed to get canvas context'));
-            return;
+  const compressImage = (file: File): Promise<string> => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+
+        // Set max dimensions to reduce file size
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let { width } = img;
+        let { height } = img;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= (MAX_WIDTH / width);
+            width = MAX_WIDTH;
           }
-          
-          // Set max dimensions to reduce file size
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = height * (MAX_WIDTH / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = width * (MAX_HEIGHT / height);
-              height = MAX_HEIGHT;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Compress to JPEG with 0.7 quality
-          const compressedData = canvas.toDataURL('image/jpeg', 0.7);
-          resolve(compressedData);
-        };
-        img.onerror = () => reject(new Error('Failed to load image'));
-        img.src = e.target?.result as string;
+        } else if (height > MAX_HEIGHT) {
+          width *= (MAX_HEIGHT / height);
+          height = MAX_HEIGHT;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress to JPEG with 0.7 quality
+        const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+        resolve(compressedData);
       };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    });
-  };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
 
   // Handle image upload (multiple files)
   imageUpload.addEventListener('change', async (event) => {
     const target = event.target as HTMLInputElement;
-    const files = target.files;
+    const { files } = target;
     if (files && files.length > 0) {
-      const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-      
+      const imageFiles = Array.from(files).filter((file) => file.type.startsWith('image/'));
+
       if (imageFiles.length === 0) {
         return;
       }
-      
+
       try {
-        // Process images sequentially to avoid memory issues
-        for (let i = 0; i < imageFiles.length; i++) {
-          const compressedImage = await compressImage(imageFiles[i]);
+        // Process all images concurrently
+        const compressedImages = await Promise.all(imageFiles.map((file) => compressImage(file)));
+
+        compressedImages.forEach((compressedImage, index) => {
           // Use filename without extension as the gift name
-          const filename = imageFiles[i].name;
+          const filename = imageFiles[index].name;
           const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
           giftList.push({
             image: compressedImage,
             name: nameWithoutExt
           });
-        }
-        
+        });
+
         saveGiftList();
         updateGiftListUI();
         updateCurrentGiftImage();
@@ -426,7 +429,7 @@ import SoundEffects from '@js/SoundEffects';
 
   // Load gift list on page load
   loadGiftList();
-  
+
   // Image navigation handlers
   imageNavLeft.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -435,7 +438,7 @@ import SoundEffects from '@js/SoundEffects';
       updateCurrentGiftImage();
     }
   });
-  
+
   imageNavRight.addEventListener('click', (e) => {
     e.stopPropagation();
     if (giftList.length > 0) {
@@ -443,15 +446,15 @@ import SoundEffects from '@js/SoundEffects';
       updateCurrentGiftImage();
     }
   });
-  
+
   // Click on left/right half of image box to navigate
   imageBox.addEventListener('click', (e) => {
     if (giftList.length <= 1) return;
-    
+
     const rect = imageBox.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const halfWidth = rect.width / 2;
-    
+
     if (clickX < halfWidth) {
       // Clicked left side - go to previous
       currentImageIndex = (currentImageIndex - 1 + giftList.length) % giftList.length;
