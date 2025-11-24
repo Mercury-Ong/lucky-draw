@@ -17,7 +17,6 @@
   margin: $title-margin-top 0 $title-margin-bottom 0;
   position: relative;
   z-index: $z-index-title; // make sure title on top of sunburst
-  color: $color-title-border;
   display: inline-block;
 
   @each $media-query, $factor in $scale-factors {
@@ -27,7 +26,7 @@
     }
   }
 
-  svg {
+  img {
     width: 100%;
     height: auto;
     display: block;
@@ -129,6 +128,9 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 
   // Fixing the notch issue on iOS when using "viewport-fit=cover"
   --safe-area-inset-right: 0px;
@@ -148,6 +150,18 @@
 
   .icon-button {
     margin: 0 0 0 1.5rem;
+  }
+}
+
+.spin-counter {
+  font-size: 1rem;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  
+  @media #{$mobile} {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
   }
 }
 

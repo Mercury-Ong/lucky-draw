@@ -23,7 +23,7 @@ export default class Slot {
   private priorityNameList: string[];
 
   /** Counter for number of spins */
-  private spinCount: number;
+  private spinCountInternal: number;
 
   /** Whether there is a previous winner element displayed in reel */
   private havePreviousWinner: boolean;
@@ -69,7 +69,7 @@ export default class Slot {
   ) {
     this.nameList = [];
     this.priorityNameList = [];
-    this.spinCount = 0;
+    this.spinCountInternal = 0;
     this.havePreviousWinner = false;
     this.reelContainer = document.querySelector(reelContainerSelector);
     this.maxReelItems = maxReelItems;
@@ -150,6 +150,11 @@ export default class Slot {
     return this.shouldRemoveWinner;
   }
 
+  /** Getter for spin count */
+  get spinCount(): number {
+    return this.spinCountInternal;
+  }
+
   /**
    * Returns a new array where the items are shuffled
    * @template T  Type of items inside the array to be shuffled
@@ -192,27 +197,50 @@ export default class Slot {
     }
 
     // Increment spin count
-    this.spinCount += 1;
+    this.spinCountInternal += 1;
 
-    // Shuffle names and create reel items
-    let poolToDrawFrom: string[];
+    // Determine the winner based on weighted priority logic
+    let winnerName: string;
 
-    // If within first 40 spins and priority list has names, only draw from priority list
-    if (this.spinCount <= 40 && this.priorityNameList.length > 0) {
-      poolToDrawFrom = this.priorityNameList;
+    // If within first 40 spins and priority list has names, use weighted selection
+    if (this.spinCountInternal <= 40 && this.priorityNameList.length > 0) {
+      const remainingSpins = 40 - this.spinCountInternal + 1;
+
+      // If remaining spins equals priority list count, force 100% priority selection
+      if (remainingSpins === this.priorityNameList.length) {
+        const shuffledPriority = Slot.shuffleNames<string>(this.priorityNameList);
+        [winnerName] = shuffledPriority;
+      } else {
+        // Create weighted pool: priority names appear 3 times, regular names appear 1 time
+        const weightedPool = [
+          ...this.priorityNameList,
+          ...this.priorityNameList,
+          ...this.priorityNameList,
+          ...this.nameList
+        ];
+        const shuffledWeighted = Slot.shuffleNames<string>(weightedPool);
+        [winnerName] = shuffledWeighted;
+      }
     } else {
-      poolToDrawFrom = this.nameList;
+      // Pick winner from regular name list only
+      const shuffledNames = Slot.shuffleNames<string>(this.nameList);
+      [winnerName] = shuffledNames;
     }
 
-    let randomNames = Slot.shuffleNames<string>(poolToDrawFrom);
+    // Create combined pool for reel display (mix both lists)
+    const combinedPool = [...this.priorityNameList, ...this.nameList];
+    let randomNames = Slot.shuffleNames<string>(combinedPool);
 
     // Loop the name list multiple times to fill the reel
     const targetLength = this.maxReelItems * 2; // Double the items needed for faster scrolling
     while (randomNames.length < targetLength) {
-      randomNames = [...randomNames, ...Slot.shuffleNames<string>(poolToDrawFrom)];
+      randomNames = [...randomNames, ...Slot.shuffleNames<string>(combinedPool)];
     }
 
     randomNames = randomNames.slice(0, targetLength - Number(this.havePreviousWinner));
+
+    // Ensure the winner is at the end
+    randomNames[randomNames.length - 1] = winnerName;
 
     const fragment = document.createDocumentFragment();
 

@@ -30,6 +30,7 @@ import SoundEffects from '@js/SoundEffects';
   const imageNavLeft = document.getElementById('image-nav-left') as HTMLDivElement | null;
   const imageNavRight = document.getElementById('image-nav-right') as HTMLDivElement | null;
   const giftNameDisplay = document.getElementById('gift-name') as HTMLHeadingElement | null;
+  const spinCounter = document.getElementById('spin-counter') as HTMLHeadingElement | null;
 
   // Graceful exit if necessary elements are not found
   if (!(
@@ -59,6 +60,7 @@ import SoundEffects from '@js/SoundEffects';
     && imageNavLeft
     && imageNavRight
     && giftNameDisplay
+    && spinCounter
   )) {
     console.error('One or more Element ID is invalid. This is possibly a bug.');
     return;
@@ -239,22 +241,20 @@ import SoundEffects from '@js/SoundEffects';
     soundEffects.spin((MAX_REEL_ITEMS - 1) / 10);
   };
 
-  /**  Functions to be trigger after spinning */
-  const onSpinEnd = async () => {
-    confettiAnimation();
-    sunburstSvg.style.display = 'block';
-    await soundEffects.win();
-    drawButton.disabled = false;
-    settingsButton.disabled = false;
-    giftSettingsButton.disabled = false;
-  };
-
   /** Slot instance */
   const slot = new Slot({
     reelContainerSelector: '#reel',
     maxReelItems: MAX_REEL_ITEMS,
     onSpinStart,
-    onSpinEnd,
+    onSpinEnd: async () => {
+      confettiAnimation();
+      sunburstSvg.style.display = 'block';
+      await soundEffects.win();
+      drawButton.disabled = false;
+      settingsButton.disabled = false;
+      giftSettingsButton.disabled = false;
+      spinCounter.textContent = `Spin: ${slot.spinCount}`;
+    },
     onNameListChanged: stopWinningAnimation
   });
 

@@ -1,7 +1,8 @@
 include ../mixins/icons
 
 .main
-  h1.event-title Deloitte BN Annual Dinner 2025
+  .event-title
+    img(src="~@images/title.png" alt="Deloitte BN Annual Dinner 2025")
 
   .control-group
     button#fullscreen-button.icon-button.icon-button--small
@@ -10,13 +11,13 @@ include ../mixins/icons
       +svg-icon.red.big(svg-icon-name='gift')
     button#settings-button.icon-button.icon-button--small(title='Name Settings')
       +svg-icon.red.big(svg-icon-name='settings')
+    h3#spin-counter.spin-counter Spin: 0
 
   canvas#confetti-canvas.confetti
 
   #lucky-draw
     .title
-      //- Pug loader currently does not handle webpack alias so we will use relative path here
-      include ../assets/images/title.svg
+      img(src="~@images/lucky-draw.png" alt="Lucky Draw")
 
     .image-box#image-box
       img#uploaded-image.uploaded-image(style="display: none;")

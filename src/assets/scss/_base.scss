@@ -1,4 +1,53 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap');
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos Bold Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos ExtraBold Italic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('../font/Aptos Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
 
 *:not(input, textarea, select) {
   -webkit-user-select: none;
@@ -22,10 +71,7 @@ body {
   height: 100%;
   font-size: 16px;
   line-height: 1.5;
-  font-family: 'Aptos', 'Nunito Sans', 微軟正黑體, 'Microsoft JhengHei',
-    'Microsoft JhengHei UI', 'Microsoft YaHei', 'Microsoft YaHei UI',
-    'PingFang TC', 'Lantinghei TC', 'Heiti TC', 'Apple LiGothic', 'PMingLiU',
-    Arial, sans-serif;
+  font-family: 'Aptos', Arial, sans-serif;
 }
 
 #app {
@@ -88,29 +134,21 @@ body {
 }
 
 .event-title {
-  font-size: 3rem;
   text-align: center;
-  color: $color-text-light;
   margin: 0.5rem 0 1rem 0;
-  text-shadow: 
-    -1px -1px 0 $color-green, 1px -1px 0 $color-green, -1px 1px 0 $color-green, 1px 1px 0 $color-green,
-    -2px -2px 0 $color-green, 2px -2px 0 $color-green, -2px 2px 0 $color-green, 2px 2px 0 $color-green,
-    -3px -3px 0 $color-green, 3px -3px 0 $color-green, -3px 3px 0 $color-green, 3px 3px 0 $color-green,
-    -4px -4px 0 $color-green, 4px -4px 0 $color-green, -4px 4px 0 $color-green, 4px 4px 0 $color-green,
-    -5px -5px 0 $color-green, 5px -5px 0 $color-green, -5px 5px 0 $color-green, 5px 5px 0 $color-green,
-    -6px -6px 0 $color-green, 6px -6px 0 $color-green, -6px 6px 0 $color-green, 6px 6px 0 $color-green,
-    -7px -7px 0 $color-green, 7px -7px 0 $color-green, -7px 7px 0 $color-green, 7px 7px 0 $color-green,
-    -1px 0 0 $color-green, 1px 0 0 $color-green, 0 -1px 0 $color-green, 0 1px 0 $color-green,
-    -2px 0 0 $color-green, 2px 0 0 $color-green, 0 -2px 0 $color-green, 0 2px 0 $color-green,
-    -3px 0 0 $color-green, 3px 0 0 $color-green, 0 -3px 0 $color-green, 0 3px 0 $color-green,
-    -4px 0 0 $color-green, 4px 0 0 $color-green, 0 -4px 0 $color-green, 0 4px 0 $color-green,
-    -5px 0 0 $color-green, 5px 0 0 $color-green, 0 -5px 0 $color-green, 0 5px 0 $color-green,
-    -6px 0 0 $color-green, 6px 0 0 $color-green, 0 -6px 0 $color-green, 0 6px 0 $color-green,
-    -7px 0 0 $color-green, 7px 0 0 $color-green, 0 -7px 0 $color-green, 0 7px 0 $color-green;
+  width: 100%;
+  max-width: 700px;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
   
   @media #{$mobile} {
-    font-size: 2rem;
-    margin: 0 0 1rem 0;
+    max-width: 500px;
+    margin: 0 auto 1rem auto;
   }
 }
 
